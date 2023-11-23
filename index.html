@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>NewMod</title>
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.colVis.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.2/raphael-min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+<style type="text/css">
+body {
+	margin:2em;
+}
+.glyphicon.spinning {
+    animation: spin 1s infinite linear;
+    -webkit-animation: spin2 1s infinite linear;
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg); }
+    to { transform: scale(1) rotate(360deg); }
+}
+
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
+}
+</style>
+</head>
+<body>
+<div class="container-wrapper">
+	<h1 class="text-center" style="margin-bottom: 20px;">NewMod</h1>
+	<div id="login" class="container text-center" style="width: 400px;">
+		<form>
+			<div class="form-group">
+				<label for="key">Key</label>
+				<input type="text" class="form-control" id="key" aria-describedby="keyHelp" placeholder="Enter key">
+				<small id="keyHelp" class="form-text text-muted" style="display: none;">Wrong key!</small>
+			</div>
+			<button type="button" id="bt-login" class="btn btn-primary"><span id="sp-login" class="glyphicon glyphicon-refresh spinning" style="display: none;"></span> Login</button>
+		</form>
+	</div>
+	<div id="main" style="display: none;">
+		<div class="container-fluid" id="myAlert">
+		</div>
+		<div class="container-fluid" style="margin-bottom: 10px;">
+			<button type="button" data-func="dt-add" class="btn btn-success dt-add" style="float: left; margin-right: 20px;">
+				<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+				<strong>Add User</strong>
+			</button>
+			<table id="example" class="table table-bordered" cellspacing="0" width="100%" style="text-align: center;">
+				<thead>
+					<tr>
+						<th style="text-align: center;"><span class="glyphicon glyphicon-user" aria-hidden="true" style="margin-right: 5px;"></span>User</th>
+						<th style="text-align: center;"><span class="glyphicon glyphicon-lock" aria-hidden="true" style="margin-right: 5px;"></span>Pass</th>
+						<th style="text-align: center;"><span class="glyphicon glyphicon-phone" aria-hidden="true" style="margin-right: 5px;"></span>Device Id</th>
+						<th style="text-align: center;"><span class="glyphicon glyphicon-heart" aria-hidden="true" style="margin-right: 5px;"></span>Status</th>
+						<th style="text-align: center;"><span class="glyphicon glyphicon-cog" aria-hidden="true" style="margin-right: 5px;"></span>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4>User Activity</h4>
+			</div>
+			<div class="panel-body">
+				<h4 id="user_activity" class="text-center"><span class="glyphicon glyphicon-refresh spinning"></span> Loading...</h4>
+				<div id="line-chart"></div>
+			</div>
+			<div class="panel-footer">
+				<h5>Total user today : <span id="total_user">-</span></h5>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4>Login Activity</h4>
+			</div>
+			<div class="panel-body">
+				<h4 id="login_activity" class="text-center"><span class="glyphicon glyphicon-refresh spinning"></span> Loading...</h4>
+				<div id="area-chart"></div>
+			</div>
+			<div class="panel-footer">
+				<h5>Total login today : <span id="total_login">-</span></h5>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4>Game Activity</h4>
+			</div>
+			<div class="panel-body">
+				<h4 id="game_activity" class="text-center"><span class="glyphicon glyphicon-refresh spinning"></span> Loading...</h4>
+				<div id="bar-chart"></div>
+			</div>
+			<div class="panel-footer">
+				<h5>Total game today : <span id="total_game">-</span></h5>
+			</div>
+		</div>
+		<div id="myModalAdd" class="modal fade" role="dialog" data-backdrop="static">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal">&times;</button>
+		        <h4 class="modal-title">Add User</h4>
+		      </div>
+		      <div class="modal-body">
+		      	<from>
+		      		<div class="form-group">
+		      			<label for="add_username" class="col-form-label">Username</label>
+		      			<input type="text" class="form-control" id="add_username">
+		      			<small id="add_username_error" class="form-text text-muted"></small>
+		      		</div>
+		      		<div class="form-group">
+		      			<label for="add_password" class="col-form-label">Password</label>
+		      			<input type="text" class="form-control" id="add_password">
+		      			<small id="add_password_error" class="form-text text-muted"></small>
+		      		</div>
+		      		<div class="form-group">
+		      			<label for="add_duration" class="col-form-label">Duration</label>
+		      			<select id="add_duration" class="form-control">
+		      				<option value="1">1 Day</option>
+		      				<option value="3">3 Day</option>
+		      				<option value="7" selected>7 Day</option>
+		      				<option value="15">15 Day</option>
+		      				<option value="30">30 Day</option>
+		      			</select>
+		      		</div>
+				</form>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		        <button type="button" id="sb-add" class="btn btn-primary"><span id="sp-add" class="glyphicon glyphicon-refresh spinning" style="display: none;"></span> Submit</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		<div id="myModalEdit" class="modal fade" role="dialog" data-backdrop="static">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal">&times;</button>
+		        <h4 class="modal-title">Edit User</h4>
+		      </div>
+		      <div class="modal-body">
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		        <button type="button" id="sb-edit" class="btn btn-primary"><span id="sp-edit" class="glyphicon glyphicon-refresh spinning" style="display: none;"></span> Save</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		<div id="myModalWait" class="modal fade bd-example-modal-sm" role="dialog" data-backdrop="static" data-keyboard="false">
+		  <div class="modal-dialog modal-sm">
+		    <div class="modal-content">
+		      <div class="modal-body">
+		      	<h4 class="text-center"><span class="glyphicon glyphicon-refresh spinning"></span> Please wait...</h4>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+var _0x2d56b7=_0x122f;(function(_0x70d102,_0x50d9d7){var _0x18780b=_0x122f,_0x18eae5=_0x70d102();while(!![]){try{var _0x158188=parseInt(_0x18780b(0x16e))/0x1*(parseInt(_0x18780b(0x10d))/0x2)+parseInt(_0x18780b(0xf1))/0x3+-parseInt(_0x18780b(0x11b))/0x4+parseInt(_0x18780b(0x12b))/0x5+-parseInt(_0x18780b(0x11a))/0x6*(parseInt(_0x18780b(0x11f))/0x7)+parseInt(_0x18780b(0x139))/0x8*(parseInt(_0x18780b(0x136))/0x9)+parseInt(_0x18780b(0x100))/0xa*(-parseInt(_0x18780b(0x166))/0xb);if(_0x158188===_0x50d9d7)break;else _0x18eae5['push'](_0x18eae5['shift']());}catch(_0x45f877){_0x18eae5['push'](_0x18eae5['shift']());}}}(_0x12ac,0x48428));var key=null,url_server=_0x2d56b7(0x108);function addRow(_0x2b7dd1,_0x807115,_0x58a680,_0x6d9bd2,_0x121a2d){var _0x3a2bdf=_0x2d56b7,_0x4782d2=[],_0x717be7=$(_0x3a2bdf(0x14b))[_0x3a2bdf(0x11e)]();_0x4782d2[_0x3a2bdf(0xf4)](_0x2b7dd1),_0x4782d2[_0x3a2bdf(0xf4)](_0x807115);_0x58a680&&_0x58a680[_0x3a2bdf(0x154)](':')?_0x4782d2[_0x3a2bdf(0xf4)](_0x58a680[_0x3a2bdf(0x121)](':')[0x0]):_0x4782d2['push'](_0x58a680);if(_0x6d9bd2&&_0x121a2d){var _0x5d8fd5=new Date(_0x6d9bd2),_0x4fb3bd=new Date(_0x121a2d);_0x4782d2[_0x3a2bdf(0xf4)]('<span\x20class=\x22label\x20label-success\x22>Active</span><span\x20class=\x22badge\x22\x20style=\x22margin-left:\x205px;\x22>'+(_0x4fb3bd['getTime']()-_0x5d8fd5['getTime']())/(0x3e8*0xe10*0x18)+_0x3a2bdf(0x111));}else _0x4782d2[_0x3a2bdf(0xf4)](null);_0x4782d2[_0x3a2bdf(0xf4)](_0x3a2bdf(0x140)),_0x717be7[_0x3a2bdf(0x149)]['add'](_0x4782d2)[_0x3a2bdf(0x152)](![]),$('.dt-edit')[_0x3a2bdf(0x116)](_0x3a2bdf(0x127)),$(_0x3a2bdf(0x143))['off'](_0x3a2bdf(0x127)),$(_0x3a2bdf(0x167))['off']('click'),$(_0x3a2bdf(0x129))[_0x3a2bdf(0x12f)](function(){var _0x19737a=_0x3a2bdf;$(this)['on'](_0x19737a(0x127),function(_0x194a7d){var _0x3dc69a=_0x19737a;$this=$(this);var _0x36f991=$this['parents']('tr');$(_0x3dc69a(0x117))['empty'](),$(_0x3dc69a(0x117))[_0x3dc69a(0x150)]=_0x3dc69a(0x164),$(_0x3dc69a(0x117))[_0x3dc69a(0x165)](_0x3dc69a(0x15e)+_0x36f991[0x0]['cells'][0x0][_0x3dc69a(0x150)]+'\x22\x20disabled></div>'),$(_0x3dc69a(0x117))['append']('<div\x20class=\x22form-group\x22><label\x20for=\x22old_password\x22\x20class=\x22col-form-label\x22>Old\x20Password</label><input\x20type=\x22text\x22\x20class=\x22form-control\x22\x20id=\x22old_password\x22\x20value=\x22'+_0x36f991[0x0]['cells'][0x1][_0x3dc69a(0x150)]+_0x3dc69a(0x13e)),$('#myModalEdit\x20.modal-body')['append'](_0x3dc69a(0x135)),$(_0x3dc69a(0x117))[_0x3dc69a(0x165)](_0x3dc69a(0xf6)),$(_0x3dc69a(0x132))[_0x3dc69a(0x120)](_0x3dc69a(0x13a));});}),$(_0x3a2bdf(0x143))[_0x3a2bdf(0x12f)](function(){var _0x849fb=_0x3a2bdf;$(this)['on'](_0x849fb(0x127),function(_0x4fe3dd){var _0x2a58f6=_0x849fb;$(_0x2a58f6(0xf8))[_0x2a58f6(0x120)](_0x2a58f6(0x13a)),$this=$(this);var _0x131f1a=$this[_0x2a58f6(0x14f)]('tr');$[_0x2a58f6(0x134)](url_server+_0x2a58f6(0xf2)+key+_0x2a58f6(0x161)+_0x131f1a[0x0][_0x2a58f6(0x10a)][0x0][_0x2a58f6(0x150)]+_0x2a58f6(0x101)+_0x131f1a[0x0][_0x2a58f6(0x10a)][0x1][_0x2a58f6(0x150)])[_0x2a58f6(0x151)](function(_0x57264e){var _0x595558=_0x2a58f6;_0x57264e[_0x595558(0x154)]('Success')?($(_0x595558(0x12a))[_0x595558(0x13d)](_0x595558(0x14d)+$this['parents']('tr')[0x0][_0x595558(0x10a)][0x0]['innerHTML']+_0x595558(0x10e)),$this['parents']('tr')[0x0]['cells'][0x2]['innerHTML']=''):$('#myAlert')[_0x595558(0x13d)](_0x595558(0x141)+_0x57264e+_0x595558(0xfb));})['fail'](function(){var _0x1fc35b=_0x2a58f6;$(_0x1fc35b(0x12a))[_0x1fc35b(0x13d)]('<div\x20class=\x22alert\x20alert-warning\x20alert-dismissible\x22\x20role=\x22alert\x22><strong>Failed!</strong>\x20User\x20\x27'+$this[_0x1fc35b(0x14f)]('tr')[0x0]['cells'][0x0]['innerHTML']+'\x27\x20has\x20been\x20reseted!.<button\x20type=\x22button\x22\x20class=\x22close\x22\x20data-dismiss=\x22alert\x22\x20aria-label=\x22Close\x22><span\x20aria-hidden=\x22true\x22>&times;</span></button></div>');})[_0x2a58f6(0x105)](function(){var _0x112bae=_0x2a58f6;$(_0x112bae(0xf8))[_0x112bae(0x120)]('hide');});});}),$(_0x3a2bdf(0x167))[_0x3a2bdf(0x12f)](function(){$(this)['on']('click',function(_0x3f8557){var _0x216b8b=_0x122f;$this=$(this);if(confirm(_0x216b8b(0x12e))){$('#myModalWait')[_0x216b8b(0x120)](_0x216b8b(0x13a));var _0x37b360=$this[_0x216b8b(0x14f)]('tr');$[_0x216b8b(0x134)](url_server+'?action=deleteuser&key='+key+_0x216b8b(0x161)+_0x37b360[0x0][_0x216b8b(0x10a)][0x0][_0x216b8b(0x150)]+_0x216b8b(0x101)+_0x37b360[0x0][_0x216b8b(0x10a)][0x1]['innerHTML'])[_0x216b8b(0x151)](function(_0x44da44){var _0x2bf1af=_0x216b8b;_0x44da44[_0x2bf1af(0x154)]('Success')?($(_0x2bf1af(0x12a))[_0x2bf1af(0x13d)]('<div\x20class=\x22alert\x20alert-info\x20alert-dismissible\x22\x20role=\x22alert\x22><strong>Success!</strong>\x20User\x20\x27'+$this[_0x2bf1af(0x14f)]('tr')[0x0]['cells'][0x0][_0x2bf1af(0x150)]+_0x2bf1af(0x16b)),$('#example')['DataTable']()[_0x2bf1af(0x149)](_0x37b360[0x0]['_DT_RowIndex'])[_0x2bf1af(0x163)]()[_0x2bf1af(0x152)](![])):$(_0x2bf1af(0x12a))[_0x2bf1af(0x13d)](_0x2bf1af(0x141)+_0x44da44+_0x2bf1af(0xfb));})[_0x216b8b(0x131)](function(_0x26978f){var _0x1bf2a6=_0x216b8b;$(_0x1bf2a6(0x12a))['html'](_0x1bf2a6(0x102)+_0x26978f+_0x1bf2a6(0xfb));})[_0x216b8b(0x105)](function(){var _0x3e4a38=_0x216b8b;$('#myModalWait')['modal'](_0x3e4a38(0xf9));});}});});}function setMain(){var _0x4eb434=_0x2d56b7;setUser(),setUserActivity(),setLoginActivity(),setGameActivity(),$('#myModalEdit')['on'](_0x4eb434(0x103),function(_0x5a2966){var _0x557cd1=_0x4eb434;$(_0x557cd1(0x117))[_0x557cd1(0x113)]();}),$('.dt-add')[_0x4eb434(0x12f)](function(){var _0x350e92=_0x4eb434;$(this)['on'](_0x350e92(0x127),function(_0x5c10c0){var _0x1748f5=_0x350e92;$(_0x1748f5(0xf3))[_0x1748f5(0x170)](null),$(_0x1748f5(0x112))[_0x1748f5(0x170)](null),$(_0x1748f5(0x158))[_0x1748f5(0x113)](),$(_0x1748f5(0x16d))['empty'](),$('#myModalAdd')[_0x1748f5(0x120)](_0x1748f5(0x13a));});}),$(_0x4eb434(0x14e))[_0x4eb434(0x12f)](function(){var _0x1b9d6c=_0x4eb434;$(this)['on'](_0x1b9d6c(0x127),function(_0x5b5194){var _0x1c6c47=_0x1b9d6c,_0x25feed=$('#add_username')[_0x1c6c47(0x170)](),_0x38fe4c=$(_0x1c6c47(0x112))[_0x1c6c47(0x170)](),_0x5666b9=$(_0x1c6c47(0x126))[_0x1c6c47(0x170)]();if(!_0x25feed)$(_0x1c6c47(0x158))[_0x1c6c47(0x13d)]('Empty\x20username!'),$(_0x1c6c47(0x16d))[_0x1c6c47(0x113)]();else!_0x38fe4c?($(_0x1c6c47(0x158))[_0x1c6c47(0x113)](),$('#add_password_error')[_0x1c6c47(0x13d)](_0x1c6c47(0x11d))):($(_0x1c6c47(0x158))[_0x1c6c47(0x113)](),$(_0x1c6c47(0x16d))['empty'](),$('#sp-add')[_0x1c6c47(0x13a)](),$[_0x1c6c47(0x134)](url_server+_0x1c6c47(0x142)+key+'&username='+_0x25feed+_0x1c6c47(0x101)+_0x38fe4c+_0x1c6c47(0x118)+_0x5666b9)[_0x1c6c47(0x151)](function(_0x1ebdcd){var _0x203bc9=_0x1c6c47;_0x1ebdcd[_0x203bc9(0x154)]('Success')?($(_0x203bc9(0x12a))[_0x203bc9(0x13d)](_0x203bc9(0x14d)+$('#add_username')[_0x203bc9(0x170)]()+_0x203bc9(0x114)),addRow(_0x25feed,_0x38fe4c,null,null,null),$('#myModalAdd')[_0x203bc9(0x120)](_0x203bc9(0xf9))):($(_0x203bc9(0x158))['html'](_0x1ebdcd),$(_0x203bc9(0x12a))[_0x203bc9(0x13d)](_0x203bc9(0x141)+_0x1ebdcd+_0x203bc9(0xfb)));})[_0x1c6c47(0x131)](function(_0x210277){var _0x50d8ec=_0x1c6c47;$(_0x50d8ec(0x12a))[_0x50d8ec(0x13d)](_0x50d8ec(0x141)+_0x210277+'<button\x20type=\x22button\x22\x20class=\x22close\x22\x20data-dismiss=\x22alert\x22\x20aria-label=\x22Close\x22><span\x20aria-hidden=\x22true\x22>&times;</span></button></div>');})['always'](function(){var _0x286795=_0x1c6c47;$(_0x286795(0xf5))[_0x286795(0xf9)]();}));});}),$(_0x4eb434(0x159))['each'](function(){var _0x31593c=_0x4eb434;$(this)['on'](_0x31593c(0x127),function(_0x40fa72){var _0x182c8e=_0x31593c,_0x334000=$(_0x182c8e(0x133))[_0x182c8e(0x170)](),_0x230135=$(_0x182c8e(0xf0))[_0x182c8e(0x170)](),_0x15a414=$(_0x182c8e(0x155))[_0x182c8e(0x170)]();!_0x334000||!_0x230135||!_0x15a414?$(_0x182c8e(0x13b))[_0x182c8e(0x13d)](_0x182c8e(0x11d)):($('#edit_new_password_error')['empty'](),$(_0x182c8e(0x13f))[_0x182c8e(0x13a)](),$[_0x182c8e(0x134)](url_server+_0x182c8e(0x15c)+key+'&username='+_0x334000+_0x182c8e(0xfa)+_0x230135+'&newpassword='+_0x15a414)['done'](function(_0x1208a6){var _0x181aee=_0x182c8e;_0x1208a6['includes']('Success')?($this['parents']('tr')[0x0][_0x181aee(0x10a)][0x1][_0x181aee(0x150)]=_0x15a414,$('#myAlert')[_0x181aee(0x13d)](_0x181aee(0x14d)+$this['parents']('tr')[0x0][_0x181aee(0x10a)][0x0][_0x181aee(0x150)]+_0x181aee(0x114))):$(_0x181aee(0x12a))[_0x181aee(0x13d)](_0x181aee(0x141)+_0x1208a6+'<button\x20type=\x22button\x22\x20class=\x22close\x22\x20data-dismiss=\x22alert\x22\x20aria-label=\x22Close\x22><span\x20aria-hidden=\x22true\x22>&times;</span></button></div>');})[_0x182c8e(0x131)](function(_0x2834d0){var _0x3e02af=_0x182c8e;$(_0x3e02af(0x12a))[_0x3e02af(0x13d)](_0x3e02af(0x141)+_0x2834d0+'<button\x20type=\x22button\x22\x20class=\x22close\x22\x20data-dismiss=\x22alert\x22\x20aria-label=\x22Close\x22><span\x20aria-hidden=\x22true\x22>&times;</span></button></div>');})[_0x182c8e(0x105)](function(){var _0x42a38e=_0x182c8e;$(_0x42a38e(0x13f))[_0x42a38e(0xf9)](),$('#myModalEdit')[_0x42a38e(0x120)]('hide');}));});});}$(document)[_0x2d56b7(0x104)](function(){var _0xf489f8=_0x2d56b7;$('#bt-login')[_0xf489f8(0x12f)](function(){var _0x57a908=_0xf489f8;$(this)['on'](_0x57a908(0x127),function(_0x209b80){var _0x401630=_0x57a908;$('#sp-login')[_0x401630(0x13a)](),key=$(_0x401630(0x145))[_0x401630(0x170)](),$[_0x401630(0x134)](url_server+_0x401630(0x122)+key)['done'](function(_0x3b215f){var _0x44688c=_0x401630;_0x3b215f[_0x44688c(0x154)](_0x44688c(0x162))?($(_0x44688c(0x14c))[_0x44688c(0xf9)](),$('#main')[_0x44688c(0x13a)](),setMain()):$(_0x44688c(0x130))[_0x44688c(0x13a)]();})['fail'](function(_0x76f0f7){var _0x9d8978=_0x401630;$(_0x9d8978(0x12a))[_0x9d8978(0x13d)](_0x9d8978(0x141)+_0x76f0f7+_0x9d8978(0xfb));})[_0x401630(0x105)](function(){var _0x44a94a=_0x401630;$('#sp-login')[_0x44a94a(0xf9)]();});});});});function setUser(){var _0x2f7a40=_0x2d56b7;$(_0x2f7a40(0x14b))[_0x2f7a40(0x11e)]({'dom':_0x2f7a40(0x125),'paging':![],'autoWidth':!![],'columnDefs':[{'orderable':![],'targets':0x4}],'buttons':['colvis',_0x2f7a40(0x156),'csvHtml5','excelHtml5',_0x2f7a40(0x137),_0x2f7a40(0x15f)]}),$[_0x2f7a40(0x134)](url_server+_0x2f7a40(0xfc)+key)[_0x2f7a40(0x151)](function(_0x54563c){var _0x2a8246=_0x2f7a40,_0x1b4ffa=JSON['parse'](_0x54563c);for(var _0x272831=0x0;_0x272831<_0x1b4ffa[_0x2a8246(0x106)];_0x272831++){addRow(_0x1b4ffa[_0x272831][0x0],_0x1b4ffa[_0x272831][0x1],_0x1b4ffa[_0x272831][0x2],_0x1b4ffa[_0x272831][0x4],_0x1b4ffa[_0x272831][0x5]);}})[_0x2f7a40(0x131)](function(_0x5e8c12){var _0x2bc529=_0x2f7a40;$('#myAlert')[_0x2bc529(0x13d)]('<div\x20class=\x22alert\x20alert-warning\x20alert-dismissible\x22\x20role=\x22alert\x22><strong>Failed!</strong>\x20'+_0x5e8c12+_0x2bc529(0xfb));})[_0x2f7a40(0x105)](function(){});}function getMonth(_0x3cd0cd){var _0x37cf3a=_0x2d56b7,_0x308f5b=['jan',_0x37cf3a(0x15b),_0x37cf3a(0x168),_0x37cf3a(0x11c),_0x37cf3a(0x10f),'jun',_0x37cf3a(0x10b),'aug',_0x37cf3a(0x146),'okt','nov',_0x37cf3a(0x10c)];return _0x308f5b[_0x3cd0cd];}function setUserActivity(){var _0x3a736b=_0x2d56b7;$[_0x3a736b(0x134)](url_server+_0x3a736b(0xfe)+key)[_0x3a736b(0x151)](function(_0x51ac42){var _0x9526bc=_0x3a736b,_0xfeed82=JSON[_0x9526bc(0x109)](_0x51ac42),_0x43cf72=[],_0x49a010,_0x10837b,_0x11e980;for(_0x10837b=0x0;_0x10837b!=_0x49a010;_0x10837b++){_0x49a010&&_0x43cf72[_0x9526bc(0xf4)]({'z':_0xfeed82[_0x9526bc(0x153)][_0x10837b][0x0]+'\x20'+getMonth(_0xfeed82[_0x9526bc(0x153)][_0x10837b][0x1]-0x1),'x':_0xfeed82[_0x9526bc(0x153)][_0x10837b][0x2],'y':_0xfeed82[_0x9526bc(0x153)][_0x10837b][0x3]}),_0xfeed82[_0x9526bc(0x119)]==_0xfeed82[_0x9526bc(0x153)][_0x10837b][0x0]&&(_0x49a010=_0x10837b),_0x10837b+0x1==_0xfeed82['data'][_0x9526bc(0x106)]&&(_0x10837b=0x0);}_0x49a010&&(_0x11e980=_0xfeed82[_0x9526bc(0x153)][_0x49a010][0x2]+_0xfeed82[_0x9526bc(0x153)][_0x49a010][0x3],_0x43cf72['push']({'z':_0xfeed82[_0x9526bc(0x153)][_0x49a010][0x0]+'\x20'+getMonth(_0xfeed82['data'][_0x49a010][0x1]-0x1),'x':_0xfeed82[_0x9526bc(0x153)][_0x49a010][0x2],'y':_0xfeed82['data'][_0x49a010][0x3]}));var _0x30b6b8={'element':_0x9526bc(0x16a),'data':_0x43cf72,'xkey':'z','parseTime':![],'ykeys':['x','y'],'labels':[_0x9526bc(0x14a),_0x9526bc(0x110)],'hideHover':'auto','behaveLikeLine':!![],'resize':!![],'pointFillColors':[_0x9526bc(0x107)],'pointStrokeColors':[_0x9526bc(0xff)],'lineColors':['gray',_0x9526bc(0x144)]};Morris['Line'](_0x30b6b8),$(_0x9526bc(0x148))['html'](_0x11e980);})[_0x3a736b(0x131)](function(_0x12255b){var _0x38363f=_0x3a736b;$(_0x38363f(0x12d))[_0x38363f(0x13d)](_0x12255b);})['always'](function(){var _0x160551=_0x3a736b;$(_0x160551(0x12d))['hide']();});}function getHours(_0x274f4f){var _0x55029d=_0x2d56b7;if(_0x274f4f>0x0&&_0x274f4f<0xd)return _0x274f4f<0xa?'0'+_0x274f4f+_0x55029d(0x124):_0x274f4f+_0x55029d(0x124);else{if(_0x274f4f>0xc&&_0x274f4f<0x18){var _0x317381=_0x274f4f-0xc;if(_0x317381<0xa)return'0'+_0x317381+_0x55029d(0x115);return _0x317381+_0x55029d(0x115);}else return _0x55029d(0x13c);}}function _0x122f(_0x518130,_0x262903){var _0x12ac2b=_0x12ac();return _0x122f=function(_0x122f34,_0x161344){_0x122f34=_0x122f34-0xf0;var _0x2d69b9=_0x12ac2b[_0x122f34];return _0x2d69b9;},_0x122f(_0x518130,_0x262903);}function setLoginActivity(_0x4ef785){var _0xbcc910=_0x2d56b7;$[_0xbcc910(0x134)](url_server+_0xbcc910(0x147)+key)[_0xbcc910(0x151)](function(_0x3a6606){var _0x1f3ad1=_0xbcc910,_0xb931f=JSON[_0x1f3ad1(0x109)](_0x3a6606),_0x2bef0d=[],_0xa6a2f9,_0x1fc157,_0x5adda1;for(_0x1fc157=0x0;_0x1fc157!=_0xa6a2f9;_0x1fc157++){_0xa6a2f9&&_0x2bef0d[_0x1f3ad1(0xf4)]({'z':getHours(_0xb931f[_0x1f3ad1(0x153)][_0x1fc157][0x0]),'x':_0xb931f[_0x1f3ad1(0x153)][_0x1fc157][0x2],'y':_0xb931f[_0x1f3ad1(0x153)][_0x1fc157][0x3]}),_0xb931f[_0x1f3ad1(0x119)]==_0xb931f['data'][_0x1fc157][0x0]&&(_0xa6a2f9=_0x1fc157),_0x1fc157+0x1==_0xb931f[_0x1f3ad1(0x153)]['length']&&(_0x1fc157=0x0,_0x2bef0d[_0x1f3ad1(0xf4)]({'z':getHours(_0xb931f[_0x1f3ad1(0x153)][_0x1fc157][0x0]),'x':_0xb931f['data'][_0x1fc157][0x2],'y':_0xb931f[_0x1f3ad1(0x153)][_0x1fc157][0x3]}));}_0xa6a2f9&&(_0x5adda1=_0xb931f[_0x1f3ad1(0x153)][_0xa6a2f9][0x2]+_0xb931f[_0x1f3ad1(0x153)][_0xa6a2f9][0x3],_0x2bef0d[_0x1f3ad1(0xf4)]({'z':getHours(_0xb931f['data'][_0xa6a2f9][0x0]),'x':_0xb931f[_0x1f3ad1(0x153)][_0xa6a2f9][0x2],'y':_0xb931f['data'][_0xa6a2f9][0x3]}));var _0x303734={'element':'area-chart','data':_0x2bef0d,'xkey':'z','parseTime':![],'ykeys':['x','y'],'labels':[_0x1f3ad1(0x15a),_0x1f3ad1(0x128)],'fillOpacity':0.6,'hideHover':'auto','behaveLikeLine':!![],'resize':!![],'pointFillColors':['white'],'pointStrokeColors':[_0x1f3ad1(0xff)],'lineColors':['gray',_0x1f3ad1(0x144)]};Morris[_0x1f3ad1(0x160)](_0x303734),$(_0x1f3ad1(0x169))[_0x1f3ad1(0x13d)](_0x5adda1);})[_0xbcc910(0x131)](function(_0x3f7330){var _0x37bd55=_0xbcc910;$(_0x37bd55(0x123))[_0x37bd55(0x13d)](_0x3f7330);})[_0xbcc910(0x105)](function(){var _0x15c19f=_0xbcc910;$(_0x15c19f(0x123))[_0x15c19f(0xf9)]();});}function setGameActivity(_0x2e7cae){var _0x4e1156=_0x2d56b7;$[_0x4e1156(0x134)](url_server+_0x4e1156(0x15d)+key)[_0x4e1156(0x151)](function(_0x39d021){var _0x43d93e=_0x4e1156,_0x49e89d=JSON[_0x43d93e(0x109)](_0x39d021),_0x28885b=[],_0x450604,_0x3b39bb,_0x2837c2;for(_0x3b39bb=0x0;_0x3b39bb!=_0x450604;_0x3b39bb++){_0x450604&&_0x28885b[_0x43d93e(0xf4)]({'z':getHours(_0x49e89d['data'][_0x3b39bb][0x0]),'x':_0x49e89d[_0x43d93e(0x153)][_0x3b39bb][0x2],'y':_0x49e89d[_0x43d93e(0x153)][_0x3b39bb][0x3]}),_0x49e89d['date']==_0x49e89d[_0x43d93e(0x153)][_0x3b39bb][0x0]&&(_0x450604=_0x3b39bb),_0x3b39bb+0x1==_0x49e89d[_0x43d93e(0x153)]['length']&&(_0x3b39bb=0x0,_0x28885b[_0x43d93e(0xf4)]({'z':getHours(_0x49e89d['data'][_0x3b39bb][0x0]),'x':_0x49e89d[_0x43d93e(0x153)][_0x3b39bb][0x2],'y':_0x49e89d['data'][_0x3b39bb][0x3]}));}_0x450604&&(_0x2837c2=_0x49e89d['data'][_0x450604][0x2]+_0x49e89d[_0x43d93e(0x153)][_0x450604][0x3],_0x28885b['push']({'z':getHours(_0x49e89d['data'][_0x450604][0x0]),'x':_0x49e89d['data'][_0x450604][0x2],'y':_0x49e89d[_0x43d93e(0x153)][_0x450604][0x3]}));var _0x43e0ed={'element':'bar-chart','data':_0x28885b,'xkey':'z','parseTime':![],'ykeys':['x','y'],'labels':[_0x43d93e(0xf7),_0x43d93e(0x12c)],'hideHover':_0x43d93e(0x16c),'resize':!![],'barColors':[_0x43d93e(0xfd),'blue']};Morris[_0x43d93e(0x157)](_0x43e0ed),$(_0x43d93e(0x138))[_0x43d93e(0x13d)](_0x2837c2);})['fail'](function(_0x497706){var _0x929ae8=_0x4e1156;$('#game_activity')[_0x929ae8(0x13d)](_0x497706);})[_0x4e1156(0x105)](function(){var _0x40e0dc=_0x4e1156;$(_0x40e0dc(0x16f))['hide']();});}function _0x12ac(){var _0x20a036=['always','length','white','https://script.google.com/macros/s/AKfycbyVnwxOv5b7QwVtZyAbToQIbDY0UVvfQ6kAdu9S-NZXiwgobI4LqWFcT_Ru_6OA_cA/exec','parse','cells','jul','des','8RfXmNS','\x27\x20has\x20been\x20reseted!.<button\x20type=\x22button\x22\x20class=\x22close\x22\x20data-dismiss=\x22alert\x22\x20aria-label=\x22Close\x22><span\x20aria-hidden=\x22true\x22>&times;</span></button></div>','may','Deleted','\x20day</span>','#add_password','empty','\x27\x20has\x20been\x20added!.<button\x20type=\x22button\x22\x20class=\x22close\x22\x20data-dismiss=\x22alert\x22\x20aria-label=\x22Close\x22><span\x20aria-hidden=\x22true\x22>&times;</span></button></div>',':00\x20pm','off','#myModalEdit\x20.modal-body','&duration=','date','795414wzaYnC','748040UscebK','apr','Empty\x20password!','DataTable','28CIHpUI','modal','split','?action=key&key=','#login_activity',':00\x20am','<\x22dt-buttons\x22Bf><\x22clear\x22>lirtp','#add_duration','click','Failed','.dt-edit','#myAlert','449890ryhRHz','FreeFire\x20Max','#user_activity','Are\x20you\x20sure\x20to\x20delete\x20this\x20row?','each','#keyHelp','fail','#myModalEdit','#edit_username','ajax','<div\x20class=\x22form-group\x22><label\x20for=\x22new_password\x22\x20class=\x22col-form-label\x22>New\x20Password</label><input\x20type=\x22text\x22\x20class=\x22form-control\x22\x20id=\x22new_password\x22><small\x20id=\x22edit_new_password_error\x22\x20class=\x22form-text\x20text-muted\x22></small></div>','2567889DJzefN','pdfHtml5','#total_game','8APyLnj','show','#edit_new_password_error','12:00\x20pm','html','\x22\x20disabled></div>','#sp-edit','<button\x20type=\x22button\x22\x20class=\x22btn\x20btn-primary\x20btn-xs\x20dt-edit\x22\x20style=\x22margin:\x202px;\x22><span\x20class=\x22glyphicon\x20glyphicon-pencil\x22\x20aria-hidden=\x22true\x22></span></button><button\x20type=\x22button\x22\x20class=\x22btn\x20btn-info\x20btn-xs\x20dt-reset\x22\x20style=\x22margin:\x202px;\x22><span\x20class=\x22glyphicon\x20glyphicon-refresh\x22\x20aria-hidden=\x22true\x22></span></button><button\x20type=\x22button\x22\x20class=\x22btn\x20btn-danger\x20btn-xs\x20dt-delete\x22\x20style=\x22margin:\x202px;\x22><span\x20class=\x22glyphicon\x20glyphicon-remove\x22\x20aria-hidden=\x22true\x22></span></button>','<div\x20class=\x22alert\x20alert-warning\x20alert-dismissible\x22\x20role=\x22alert\x22><strong>Failed!</strong>\x20','?action=adduser&key=','.dt-reset','red','#key','sep','?action=getloginactivity&key=','#total_user','row','Registered','#example','#login','<div\x20class=\x22alert\x20alert-info\x20alert-dismissible\x22\x20role=\x22alert\x22><strong>Success!</strong>\x20User\x20\x27','#sb-add','parents','innerHTML','done','draw','data','includes','#new_password','copyHtml5','Bar','#add_username_error','#sb-edit','Success','feb','?action=edituser&key=','?action=getgameactivity&key=','<div\x20class=\x22form-group\x22><label\x20for=\x22edit_username\x22\x20class=\x22col-form-label\x22>Username</label><input\x20type=\x22text\x22\x20class=\x22form-control\x22\x20id=\x22edit_username\x22\x20value=\x22','print','Area','&username=','success','remove','<from>','append','4037WEvlTP','.dt-delete','mar','#total_login','line-chart','\x27\x20has\x20been\x20deleted!.<button\x20type=\x22button\x22\x20class=\x22close\x22\x20data-dismiss=\x22alert\x22\x20aria-label=\x22Close\x22><span\x20aria-hidden=\x22true\x22>&times;</span></button></div>','auto','#add_password_error','79930twPJwH','#game_activity','val','#old_password','1049415kRVcJG','?action=resetuser&key=','#add_username','push','#sp-add','</form>','FreeFire','#myModalWait','hide','&oldpassword=','<button\x20type=\x22button\x22\x20class=\x22close\x22\x20data-dismiss=\x22alert\x22\x20aria-label=\x22Close\x22><span\x20aria-hidden=\x22true\x22>&times;</span></button></div>','?action=getuser&key=','gray','?action=getuseractivity&key=','black','860tDDXDN','&password=','<div\x20class=\x22alert\x20alert-warning\x20alert-dismissible\x22\x20role=\x22alert\x22><strong>Failed!</strong>','hidden.bs.modal','ready'];_0x12ac=function(){return _0x20a036;};return _0x12ac();}
+</script>
+</body>
+</html>
